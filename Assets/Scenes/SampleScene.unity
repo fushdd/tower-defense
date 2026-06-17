@@ -168,6 +168,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3805850299251744425, guid: e9b5347ed11cd2e40be3b2446e84e77e, type: 3}
+      propertyPath: m_Radius
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3805850299251744425, guid: e9b5347ed11cd2e40be3b2446e84e77e, type: 3}
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
@@ -175,6 +179,10 @@ PrefabInstance:
       propertyPath: attackInterval
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6430639938771052798, guid: e9b5347ed11cd2e40be3b2446e84e77e, type: 3}
+      propertyPath: attackProjectileSprite
+      value: 
+      objectReference: {fileID: 2188806896580579243, guid: 93f24140e8e2c3848ada7360f0e1c8e4, type: 3}
     - target: {fileID: 7349380327692453756, guid: e9b5347ed11cd2e40be3b2446e84e77e, type: 3}
       propertyPath: m_Name
       value: Tower

@@ -9,6 +9,7 @@ public class TowerAttackEnemies : MonoBehaviour
     public List<GameObject> enemiesInRadius = new();
     public float damage = 2f;
     public float attackInterval = 1f;
+    public GameObject attackProjectileSprite;
 
     private Coroutine attackCoroutine;
 
@@ -43,9 +44,35 @@ public class TowerAttackEnemies : MonoBehaviour
                 attackCoroutine = null;
                 yield break;
             }
-            
+
+            GameObject enemy = enemiesInRadius[0];
+
+            // CREATE VISUAL PROJECTILE (LASER) FOR EACH ATTACK
+
+            // create the projectile
+            GameObject projectile = Instantiate(attackProjectileSprite, transform.position, Quaternion.identity);
+
+            // place it between tower and enemy
+            projectile.transform.position = Vector3.Lerp(projectile.transform.position, enemy.transform.position, 0.5f);
+
+            // scale it to right length
+            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+            projectile.transform.localScale = new Vector3(
+                distanceToEnemy,
+                projectile.transform.localScale.y,
+                projectile.transform.localScale.z
+                );
+
+            // rotate
+            Vector3 vectorToEnemy = enemy.transform.position - transform.position;
+            float radiansToRotate = Mathf.Atan(vectorToEnemy.y / vectorToEnemy.x);
+            projectile.transform.rotation = Quaternion.Euler(0, 0, radiansToRotate * Mathf.Rad2Deg);
+
+            Destroy(projectile, 0.1f);
+
             // deal damage every {attackInterval} seconds
             enemiesInRadius[0].GetComponent<EnemyHealth>().TakeDamage(damage);
+            
             yield return new WaitForSeconds(attackInterval);
             
         }
