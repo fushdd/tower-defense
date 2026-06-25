@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class TowerAttackEnemies : MonoBehaviour
+public class AttackEnemies : MonoBehaviour
 {
 
     public List<GameObject> enemiesInRadius = new();
@@ -11,19 +12,14 @@ public class TowerAttackEnemies : MonoBehaviour
     public float attackInterval = 1f;
     public GameObject attackProjectileSprite;
 
-    private Coroutine attackCoroutine;
+    private GameObject curEnemy = null;
+    private float cooldown = 0;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // add enemies in the list as they enter tower's radius
         enemiesInRadius.Add(collision.gameObject);
 
-        // start attacking enemies in radius
-        if (attackCoroutine == null)
-        {
-            attackCoroutine = StartCoroutine(AttackLoop());
-        }
-        
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -31,32 +27,41 @@ public class TowerAttackEnemies : MonoBehaviour
         enemiesInRadius.Remove(collision.gameObject);
     }
 
-    IEnumerator AttackLoop()
+
+    private void Update()
     {
-        while (true)
+        // determine the enemy closest to finish
+        float mostProgress = float.MinValue;
+        curEnemy = null;
+        foreach (GameObject e in enemiesInRadius)
         {
-            // remove all destroyed (killed) objects
-            enemiesInRadius.RemoveAll(enemy => enemy == null);
-
-            // stop attacking coroutine when no enemies in radius
-            if (enemiesInRadius.Count == 0)
+            if (e.GetComponent<EnemyMovement>().GetProgress() > mostProgress)
             {
-                attackCoroutine = null;
-                yield break;
+                mostProgress = e.GetComponent<EnemyMovement>().GetProgress(); // ew
+                curEnemy = e;
             }
+        }
 
-            GameObject enemy = enemiesInRadius[0];
+        // track global attack cooldown for this tower
+        if (cooldown > 0)
+        {
+            cooldown -= Time.deltaTime;
+            return;
+        }
 
+        // if enemies are in range and attack is not on cooldown -> attack and start the cooldown
+        if (enemiesInRadius.Count > 0)
+        {
             // CREATE VISUAL PROJECTILE (LASER) FOR EACH ATTACK
 
             // create the projectile
             GameObject projectile = Instantiate(attackProjectileSprite, transform.position, Quaternion.identity);
 
             // place it between tower and enemy
-            projectile.transform.position = Vector3.Lerp(projectile.transform.position, enemy.transform.position, 0.5f);
+            projectile.transform.position = Vector3.Lerp(projectile.transform.position, curEnemy.transform.position, 0.5f);
 
             // scale it to right length
-            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+            float distanceToEnemy = Vector3.Distance(transform.position, curEnemy.transform.position);
             projectile.transform.localScale = new Vector3(
                 distanceToEnemy,
                 projectile.transform.localScale.y,
@@ -64,20 +69,22 @@ public class TowerAttackEnemies : MonoBehaviour
                 );
 
             // rotate
-            Vector3 vectorToEnemy = enemy.transform.position - transform.position;
+            Vector3 vectorToEnemy = curEnemy.transform.position - transform.position;
             float radiansToRotate = Mathf.Atan(vectorToEnemy.y / vectorToEnemy.x);
             projectile.transform.rotation = Quaternion.Euler(0, 0, radiansToRotate * Mathf.Rad2Deg);
 
             Destroy(projectile, 0.1f);
 
             // deal damage every {attackInterval} seconds
-            enemiesInRadius[0].GetComponent<EnemyHealth>().TakeDamage(damage);
-            
-            yield return new WaitForSeconds(attackInterval);
-            
+            curEnemy.GetComponent<EnemyHealth>().TakeDamage(damage);
+
+            // start cooldown
+            cooldown += attackInterval;
+
+            // remove all destroyed (killed) objects
+            enemiesInRadius.RemoveAll(enemy => enemy == null);
         }
 
-        
     }
 
 }

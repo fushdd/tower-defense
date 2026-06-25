@@ -4,7 +4,7 @@ using UnityEngine;
 public class NewMonoBehaviourScript : MonoBehaviour
 {
 
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs;
     public WaypointPath path;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,10 +18,11 @@ public class NewMonoBehaviourScript : MonoBehaviour
         while (true)
         {
             // spawn enemy at spawner's position every 5 seconds (or so)
-            GameObject enemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
-            enemy.GetComponent<EnemyFollowPath>().SetWaypointPath(path);
+            GameObject randomEnemy = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)]; // TEMPORARY FOR TESTING ENEMIES AND SO
+            GameObject enemy = Instantiate(randomEnemy, transform.position, Quaternion.identity);
+            enemy.GetComponent<EnemyMovement>().SetWaypointPath(path);
 
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(4f);
         }
     }
 

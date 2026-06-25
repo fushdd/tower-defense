@@ -16,7 +16,7 @@ public class TowerPlacementManager : MonoBehaviour
 
         curTower = Instantiate(tower);
         curTower.GetComponent<CircleCollider2D>().enabled = false;
-        curTower.GetComponent<TowerAttackEnemies>().enabled = false;
+        curTower.GetComponent<AttackEnemies>().enabled = false;
 
         isPlacing = true;
     }
@@ -69,7 +69,7 @@ public class TowerPlacementManager : MonoBehaviour
         if (Mouse.current.leftButton.wasPressedThisFrame && atValidPlacementSpot)
         {
             curTower.GetComponent<CircleCollider2D>().enabled = true;
-            curTower.GetComponent<TowerAttackEnemies>().enabled = true;
+            curTower.GetComponent<AttackEnemies>().enabled = true;
             isPlacing = false;
             curTower = null;
             curPlacementSpot.isValid = false;
