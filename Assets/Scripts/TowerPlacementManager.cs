@@ -6,32 +6,29 @@ public class TowerPlacementManager : MonoBehaviour
     private GameObject curTower = null;
     private bool isPlacing = false;
     private bool atValidPlacementSpot = false;
-    private bool isDraggingTower = false;
     private PlacementSpotTrigger curPlacementSpot = null;
 
     public void InitiateTowerPlacement(GameObject tower)
     {
-        // set only tower's sprite (visuals)
         if (curTower != null) return;
 
+        // set only tower's sprite (visuals)
         curTower = Instantiate(tower);
         curTower.GetComponent<CircleCollider2D>().enabled = false;
         curTower.GetComponent<AttackEnemies>().enabled = false;
 
         isPlacing = true;
     }
-    public void EnterValidPlacementSpot(PlacementSpotTrigger spot)
+    public void EnterPlacementSpot(PlacementSpotTrigger spot)
     {
         curPlacementSpot = spot;
         atValidPlacementSpot = curPlacementSpot.isValid;
-        isDraggingTower = false;
-        curTower.transform.position = curPlacementSpot.transform.position;
+                
     }
 
-    public void LeaveValidPlacementSpot()
+    public void LeavePlacementSpot()
     {
         curPlacementSpot = null;
-        isDraggingTower = true;
         atValidPlacementSpot = false;
     }
 
@@ -49,20 +46,25 @@ public class TowerPlacementManager : MonoBehaviour
         worldPos.z = 0;
 
         // check if cursor hovers over a placement spot
-        Collider2D objectUnderCursor = Physics2D.OverlapPoint(worldPos);
+        int placemenSpotLayer = LayerMask.GetMask("Tower Placement Spot");
+        Collider2D objectUnderCursor = Physics2D.OverlapPoint(worldPos, placemenSpotLayer); // check only on specific layer
         if (objectUnderCursor != null && objectUnderCursor.TryGetComponent(out PlacementSpotTrigger spot) && isPlacing)
         {
-            EnterValidPlacementSpot(spot);
+            EnterPlacementSpot(spot);
         }
         else
         {
-            LeaveValidPlacementSpot();
+            LeavePlacementSpot();
         }
 
-        // move tower sprite along with the cursor
-        if (isDraggingTower)
+        // move tower sprite along with the cursor (if not on valid placement spot)
+        if (!atValidPlacementSpot)
         {
             curTower.transform.position = worldPos;
+        }
+        else
+        {
+            curTower.transform.position = curPlacementSpot.transform.position;
         }
 
         // place the tower on a placement spot
@@ -73,6 +75,14 @@ public class TowerPlacementManager : MonoBehaviour
             isPlacing = false;
             curTower = null;
             curPlacementSpot.isValid = false;
+        }
+
+        // stop placing with right click
+        if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            Destroy(curTower);
+            //curTower = null;
+            isPlacing = false;
         }
         
     }
