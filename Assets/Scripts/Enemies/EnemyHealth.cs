@@ -33,7 +33,6 @@ public class EnemyHealth : MonoBehaviour
 
     private void Start()
     {
-        //healthFillVisual = transform.Find("HealthFill");
         healthFillVisual = transform.GetChild(0).Find("HealthFill");
         healthTextVisual.text = $"{curHealth}/{MaxHealth}";
     }

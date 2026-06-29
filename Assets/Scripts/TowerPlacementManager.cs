@@ -41,9 +41,8 @@ public class TowerPlacementManager : MonoBehaviour
     {
         if (!isPlacing) return;
 
-        Vector3 mousePos = Mouse.current.position.ReadValue();
-        Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
-        worldPos.z = 0;
+        Vector2 mousePos = Mouse.current.position.ReadValue();
+        Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
 
         // check if cursor hovers over a placement spot
         int placemenSpotLayer = LayerMask.GetMask("Tower Placement Spot");
@@ -70,8 +69,10 @@ public class TowerPlacementManager : MonoBehaviour
         // place the tower on a placement spot
         if (Mouse.current.leftButton.wasPressedThisFrame && atValidPlacementSpot)
         {
+            // turn on functional components
             curTower.GetComponent<CircleCollider2D>().enabled = true;
             curTower.GetComponent<AttackEnemies>().enabled = true;
+
             isPlacing = false;
             curTower = null;
             curPlacementSpot.isValid = false;
