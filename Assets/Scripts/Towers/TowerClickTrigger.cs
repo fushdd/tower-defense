@@ -8,7 +8,7 @@ public class TowerClickTrigger : MonoBehaviour
 
     private void Start()
     {
-        attackRangeUI = transform.parent.Find("AttackRangeUI");
+        attackRangeUI = transform.Find("AttackRange");
         towerClickLayer = LayerMask.GetMask("Tower Click Trigger");
     }
 

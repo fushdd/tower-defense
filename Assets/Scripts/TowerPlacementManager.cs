@@ -14,8 +14,8 @@ public class TowerPlacementManager : MonoBehaviour
 
         // set only tower's sprite (visuals)
         curTower = Instantiate(tower);
-        curTower.GetComponent<CircleCollider2D>().enabled = false;
-        curTower.GetComponent<AttackEnemies>().enabled = false;
+        curTower.transform.Find("AttackRange").GetComponent<CircleCollider2D>().enabled = false;
+        curTower.transform.Find("AttackRange").GetComponent<AttackEnemies>().enabled = false;
 
         isPlacing = true;
     }
@@ -70,8 +70,8 @@ public class TowerPlacementManager : MonoBehaviour
         if (Mouse.current.leftButton.wasPressedThisFrame && atValidPlacementSpot)
         {
             // turn on functional components
-            curTower.GetComponent<CircleCollider2D>().enabled = true;
-            curTower.GetComponent<AttackEnemies>().enabled = true;
+            curTower.transform.Find("AttackRange").GetComponent<CircleCollider2D>().enabled = true;
+            curTower.transform.Find("AttackRange").GetComponent<AttackEnemies>().enabled = true;
 
             isPlacing = false;
             curTower = null;
@@ -82,7 +82,6 @@ public class TowerPlacementManager : MonoBehaviour
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             Destroy(curTower);
-            //curTower = null;
             isPlacing = false;
         }
         

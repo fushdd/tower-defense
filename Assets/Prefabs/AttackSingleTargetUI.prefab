@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1778612477878639174}
   - component: {fileID: 1609294859188222291}
   m_Layer: 0
-  m_Name: AttackVisualLaser
+  m_Name: AttackSingleTargetUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
